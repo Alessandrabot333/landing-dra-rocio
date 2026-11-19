@@ -371,11 +371,26 @@ var dlg=document.getElementById("formulario"),fm=document.getElementById("lead")
 document.querySelectorAll(".open-form").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();dlg.showModal()})});
 ["cerrar","cerrar2"].forEach(function(i){document.getElementById(i).onclick=function(){dlg.close()}});
 dlg.addEventListener("click",function(e){if(e.target===dlg)dlg.close()});
-async function guardar(l){
- if(LEADS.endpoint){var r=await fetch(LEADS.endpoint,{method:"POST",headers:{"Content-Type":"application/json",apikey:LEADS.apiKey,Authorization:"Bearer "+LEADS.apiKey,Prefer:"return=minimal"},body:JSON.stringify(l)});if(!r.ok)throw new Error("http "+r.status);return}
- var db=window.claude&&await window.claude.use("db");
- if(!db)throw new Error("sin base de datos");
- await db.collection("leads").doc(l.id).set(l)}
+
+async function guardar(l) {
+  const respuesta = await fetch(
+    "https://script.google.com/macros/s/AKfycbyRNG_GvtUFlMTyw2decUI65Ka_XRDIqAp1aHxq0Ugkeay63gnyWIhNS9NzHnNrnyujwA/exec",
+    {
+      method: "POST",
+      redirect: "follow",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(l)
+    }
+  );
+
+  const resultado = await respuesta.json();
+
+  if (!resultado.ok) {
+    throw new Error(resultado.error || "No se pudo guardar");
+  }
+}
 fm.addEventListener("submit",async function(e){
  e.preventDefault();var err=document.getElementById("err"),btn=document.getElementById("enviar");err.hidden=true;
  if(fm.web.value)return;
